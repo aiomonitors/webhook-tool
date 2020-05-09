@@ -1,16 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from '../App/App.js';
-import { remote } from 'electron';
-const { windowType } = remote.getCurrentWindow();
+import Store from './Store/MyStore';
+import AppWrapper from './AppWrapper';
 
-const AppWrapper = () => {
-  if (windowType === "auth") return (
-      <div className="something">
-          <h1>App</h1>
-      </div>
-  );
-  return <App />;
-}
-
-ReactDOM.render(<AppWrapper />, document.getElementById('app'));
+ReactDOM.render(
+    <Store.Container>
+        <AppWrapper />
+    </Store.Container>, document.getElementById('app'));

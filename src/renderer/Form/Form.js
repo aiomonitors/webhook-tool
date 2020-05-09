@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import '../styles/Form.css';
 import Embed from '../Embed/embed.js' ;
-import { ipcRenderer } from 'electron'
+import { ipcRenderer } from 'electron';
+const axios = require('axios');
 
 const Form = () => {
-    const [ embed, setEmbed ] = useState({
-        title: 'Debossed Glass Ashtray',
-        url: 'https://www.supremecommunity.com/',
-        description: '**Price:** £26 / $30\n**Category:** Accessories',
-        thumbnail: {
-          url: 'https://www.supremecommunity.com/u/season/spring-summer2020/accessories/6a2df187bf8047e3a4c5c27964a6b877_sqr.jpg'
-        },
-        fields: [],
-        footer: {
-            text: "Shihab",
-            icon_url: "https://www.shihab.dev/ondemand.png"
-        },
-        color: "#2cb67d"
-    });
+    const [ embed, setEmbed ] = useState({"title":"Ballpark™ Poncho","url":"https://www.supremecommunity.com/season/spring-summer2020/droplist/2020-04-30/","description":"Polyethylene rain poncho with adjustable hood and printed logo on chest.","fields":[{"name":"Category","value":"Accessories","inline":true},{"name":"Price","value":"£3 / $4","inline":true},{"name":"Upvotes / Downvotes","value":"15215 / 671","inline":true}],"thumbnail":{"url":"https://www.supremecommunity.com/u/season/spring-summer2020/accessories/01e6c4d7ac6047a9aeaa44078685d235_sqr.jpg"},color: "#2cb67d", "footer":{"text":"Powered by OnDemand • @AIOMonito","icon_url":"https://www.shihab.dev/ondemand.png"}});
+    const [ webhook, setWebhook ] = useState("")
     
     const [ info, setInfo ] = useState({"webhook": ""});
 
@@ -50,24 +39,23 @@ const Form = () => {
     }
 
     const openWindow = () => {
-        ipcRenderer.send('create', embed)
+        ipcRenderer.send('prompt-input', embed)
     }
 
     const addField = () => {
         setEmbed(oldEmbed => ({
             ...oldEmbed,
-            fields: [...oldEmbed.fields, { name: "", value: "", inline: false, id: +new Date() }]
+            fields: [...oldEmbed.fields, { "inline": true, "name": "", "value": "", id: +new Date()*1387216 }]
         }))
     }
 
     const updateField = (e) => {
         const id = e.currentTarget.parentNode.parentNode.id;
-        let field = embed.fields.filter(field => { return field.id == id})[0];
-        field[e.target.name] = e.target.value;
-        let fieldsWithout = embed.fields.filter(field => {return field.id != id})
+        let updated = embed.fields.filter(field => { return field.id == id})[0];
+        updated[e.target.name] = e.target.value;
         setEmbed(oldEmbed => ({
             ...oldEmbed,
-            fields: [...fieldsWithout, field]
+            fields: oldEmbed.fields.map(field => { return field.id == id ? updated : field})
         }))
     }
 
@@ -79,20 +67,48 @@ const Form = () => {
         console.log(fields);
         setEmbed(oldEmbed => ({
             ...oldEmbed,
-            fields: fields
+            fields: oldEmbed.fields.filter(field => { return field.id != id })
+        }));
+    }
+    //https://discordapp.com/api/webhooks/696119796072317009/nKJz5XNMBN2DVm6Hy69f2WNWMiCfTPAAS6eTuXEbXTu6LbfACfYP5lDMUG6D123jdEQx
+    //
+    const updateFooter = (e) => {
+        let data = {};
+        data[e.target.name] = e.target.value;
+        setEmbed(oldEmbed => ({
+            ...oldEmbed,
+            footer: {
+                ...oldEmbed.footer,
+                ...data
+            }
         }));
     }
 
+    const sendHook = async () => {
+        try {
+            let emb = embed;
+            emb.color = emb.color ? parseInt(`0x${embed.color.replace("#", "")}`) : null;
+            let res = await axios.post(webhook, {
+                content : null,
+                embeds : [emb]
+            });
+            console.log(emb)
+            return true
+        } catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
-        <div className="container">
+        <div className="container" data-aos="fade-in" data-aos-duration="1500">
                 <div className="form">
                     <div className="form-item">
                         <div className="label">Webhook</div>
-                        <input name="webhook" type="text" placeholder="13618273" value={info.webhook} onChange={updateFields}/>
+                        <input name="webhook" type="text" className="regular-input" placeholder="13618273" value={webhook} onChange={e => {setWebhook(e.target.value)}}/>
                     </div>
                     <div className="form-item">
                         <div className="caption">Title</div>
-                        <input name="title" type="text" value={embed.title} onChange={updateEmbed} />
+                        <input name="title" type="text" className="regular-input" value={embed.title} onChange={updateEmbed} />
                     </div>
                     <div className="form-item">
                         <div className="caption">Description</div>
@@ -108,7 +124,7 @@ const Form = () => {
                                             <input type="text" name="value" value={field.value} className="field-input" onChange={updateField}/>
                                         </div>
                                         <div className="field-buttons">
-                                            <button type="button" className="field-btn btn-add" onClick={addField}>+</button>
+                                            <input type="checkbox" id={`toggle-${field.id}`} class="offscreen" /> <label for={`toggle-${field.id}`} class="switch"></label>
                                             <button type="button" className="field-btn btn-danger" onClick={removeField}>-</button>
                                         </div>
                                     </div>
@@ -117,22 +133,22 @@ const Form = () => {
                         })
                     }
 
-                    <div className="form-field">
-                        <div className="caption">Description</div>
-                        <input type="text" name="name" value={embed.footer.icon_url} className="field-input" onChange={updateField}/>
-                        <input type="text" name="value" value={embed.footer.text} className="field-input" onChange={updateField}/>
+                    <div className="form-item">
+                        <div className="caption">Footer</div>
+                        <div className="inline-inputs">
+                            <input type="text" name="icon_url" value={embed.footer.icon_url} className="field-input" onChange={updateFooter}/>
+                            <input type="text" name="text" value={embed.footer.text} className="field-input" onChange={updateFooter}/>
+                        </div>
                     </div>
 
                     <div className="form-item">
                         <div className="form-buttons" id="82183198237">
-                            {
-                                embed.fields.length == 0 && <button className="btn btn-add" onClick={addField}>Add Field</button>
-                            }
-                            <button className="btn btn-send" onClick={openWindow}>Send</button>
+                            <button className="btn btn-add" onClick={addField}>Add Field</button>
+                            <button className="btn btn-send" onClick={sendHook}>Send</button>
                         </div>
                     </div>
                 </div>
-                <div className="embed-container">
+                <div className="form-container-embed">
                     <div className="form-item">
                         <div className="caption">Preview</div>
                         <Embed {...embed} />
