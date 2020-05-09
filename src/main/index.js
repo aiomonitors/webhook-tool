@@ -1,6 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 
@@ -33,8 +33,6 @@ function createMainWindow() {
     }))
   }
 
-  setTimeout(() => {return window.webContents.send('title', 'Shihab')}, 6000)
-
   window.on('closed', () => {
     mainWindow = null
   })
@@ -44,10 +42,37 @@ function createMainWindow() {
     setImmediate(() => {
       window.focus()
     })
-  })
-
+  });
   return window
 }
+
+ipcMain.on('prompt-input', (evt, embed) => {
+  const inputWin = new BrowserWindow({
+    width: 400,
+    height: 600,
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  });
+  inputWin.windowType = "input";
+
+  if (isDevelopment) {
+    inputWin.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`)
+  }
+  else {
+    inputWin.loadURL(formatUrl({
+      pathname: path.join(__dirname, 'index.html'),
+      protocol: 'file',
+      slashes: true
+    }));
+  }
+
+  inputWin.webContents.on('did-finish-load', () => {
+    inputWin.webContents.send('embed', embed)
+  })
+})
+
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
