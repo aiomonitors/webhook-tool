@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "electron-webpack dev",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder",
+    "dist": "yarn compile && electron-builder -mw",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
@@ -35,5 +35,17 @@
     "whiteListedModules": [
       "undux"
     ]
+  },
+  "build": {
+    "appId": "com.shihab.webhook-app",
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "icon": "src/static/icon.png"
+    },
+    "mac": {
+      "icon": "src/static/icon.png"
+    }
   }
 }
