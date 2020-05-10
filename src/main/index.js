@@ -46,6 +46,7 @@ function createMainWindow() {
   return window
 }
 
+//
 ipcMain.on('prompt-input', (evt, embed) => {
   const inputWin = new BrowserWindow({
     width: 400,

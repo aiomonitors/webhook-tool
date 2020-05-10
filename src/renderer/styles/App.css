@@ -11,6 +11,10 @@ body {
     padding: 15px 15px;
 }
 
+body::-webkit-scrollbar {
+    display: none;
+}
+
 .heading {
     font-size: 1.25rem;
     color: #fffffe;

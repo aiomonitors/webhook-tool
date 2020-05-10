@@ -7,11 +7,12 @@
 }
 
 .form {
-    min-width: 700px;
-    width: 60%
+    align-self: flex-start;
+    min-width: 600px;
+    width: 50%
 }
 
-.form-container {
+.form-container-embed {
     min-width: 300px;
     width: 40%;
 }
@@ -28,7 +29,8 @@
 
 .form .form-item .caption {
     color: #fffffe;
-    font-weight: 200
+    font-weight: 200;
+    margin-bottom: 2px;
 }
 
 .form .form-item .regular-input, textarea {
@@ -188,3 +190,28 @@
     position: absolute;
     left: -9999px;
   }
+
+.image-input-container {
+    width: 85%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 5px;
+
+    input {
+        width: 75%;
+        color: #94a1b2;
+        font-size: 1.25em;
+        background-color: #242629;
+        border: 1px solid #7f5af0;
+        border-radius: 8px;
+        text-align: center;
+        padding: 5px 10px 5px;
+    }
+}
+
+.image-input-container.off {
+    input {
+        opacity: 0.5;
+    }
+}

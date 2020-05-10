@@ -9,13 +9,18 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "aos": "^2.3.4",
+    "axios": "^0.19.2",
     "highlight.js": "^10.0.2",
+    "lodash": "^4.17.15",
     "moment": "^2.25.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-lottie": "^1.2.3",
     "simple-markdown": "^0.7.2",
     "source-map-support": "^0.5.16",
-    "twemoji": "^12.1.6"
+    "twemoji": "^12.1.6",
+    "undux": "^5.2.0"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.9.4",
@@ -25,5 +30,10 @@
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "webpack": "~4.42.1"
+  },
+  "electronWebpack": {
+    "whiteListedModules": [
+      "undux"
+    ]
   }
 }

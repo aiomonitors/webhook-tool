@@ -11,10 +11,10 @@ const defaultOptions = {
     }
 }
 
-const LoadingPage = props => {
+const Loader = props => {
     return (
         <div className="main">
-            <Lottie options={defaultOptions} height={120} width={120} speed={4}/>
+            <Lottie options={defaultOptions} height={10} width={10} speed={4}/>
             <div className="text">{props.text}</div>
             <style>{`
                 .donut {
