@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "aos": "^2.3.4",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "highlight.js": "^10.0.2",
     "lodash": "^4.17.15",
     "moment": "^2.25.3",
